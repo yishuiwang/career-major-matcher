@@ -1,0 +1,1337 @@
+openapi: 3.0.3
+info:
+  title: 岗位群匹配专业API
+  description: |
+    岗位群匹配专业Web应用的后端API规范文档。
+    
+    本API提供基于数据驱动的智能专业推荐服务，帮助用户根据岗位群需求找到最匹配的大学专业。
+    
+    ## 主要功能
+    - 岗位群搜索和自动补全
+    - 专业匹配结果展示和筛选
+    - 搜索历史管理
+    - 热门搜索推荐
+    - 数据统计和可视化
+    - 分析报告生成
+    
+    ## 认证方式
+    目前API为开放接口，未来可能会添加API Key认证。
+    
+  version: 1.0.0
+  contact:
+    name: 开发团队
+    email: dev@career-matcher.com
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: http://localhost:3000/api/v1
+    description: 本地开发环境
+  - url: https://api.career-matcher.com/v1
+    description: 生产环境
+
+tags:
+  - name: search
+    description: 搜索相关API
+  - name: history
+    description: 搜索历史管理
+  - name: popular
+    description: 热门搜索
+  - name: majors
+    description: 专业信息
+  - name: dashboard
+    description: 数据统计
+  - name: reports
+    description: 分析报告
+
+paths:
+  # 搜索相关API
+  /search:
+    get:
+      tags:
+        - search
+      summary: 搜索专业
+      description: 根据岗位群名称搜索匹配的大学专业
+      parameters:
+        - name: query
+          in: query
+          required: true
+          description: 搜索关键词（岗位群名称）
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 100
+            example: "软件工程师"
+        - name: page
+          in: query
+          required: false
+          description: 页码（从1开始）
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+            example: 1
+        - name: pageSize
+          in: query
+          required: false
+          description: 每页数量
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+            example: 20
+        - name: location
+          in: query
+          required: false
+          description: 地理位置筛选（多个值用逗号分隔）
+          schema:
+            type: string
+            example: "北京,上海,深圳"
+        - name: universityTier
+          in: query
+          required: false
+          description: 学校层次筛选（多个值用逗号分隔）
+          schema:
+            type: string
+            enum: ["985", "211", "双一流", "普通"]
+            example: "985,211"
+        - name: majorCategory
+          in: query
+          required: false
+          description: 专业门类筛选（多个值用逗号分隔）
+          schema:
+            type: string
+            example: "工学,理学"
+        - name: degreeLevel
+          in: query
+          required: false
+          description: 学历层次筛选（多个值用逗号分隔）
+          schema:
+            type: string
+            enum: ["本科", "硕士", "博士"]
+            example: "本科,硕士"
+        - name: sortBy
+          in: query
+          required: false
+          description: 排序字段
+          schema:
+            type: string
+            enum: ["skillsMatch", "employmentMatch", "finalScore"]
+            default: "finalScore"
+            example: "finalScore"
+        - name: sortOrder
+          in: query
+          required: false
+          description: 排序方向
+          schema:
+            type: string
+            enum: ["asc", "desc"]
+            default: "desc"
+            example: "desc"
+        - name: minScore
+          in: query
+          required: false
+          description: 最低评分筛选
+          schema:
+            type: number
+            minimum: 0
+            maximum: 100
+            example: 60
+      responses:
+        '200':
+          description: 搜索成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: 服务器内部错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /search/suggestions:
+    get:
+      tags:
+        - search
+      summary: 获取搜索建议
+      description: 根据输入的关键词获取搜索建议列表
+      parameters:
+        - name: query
+          in: query
+          required: true
+          description: 搜索关键词
+          schema:
+            type: string
+            minLength: 1
+            maxLength: 50
+            example: "软件"
+        - name: limit
+          in: query
+          required: false
+          description: 返回建议数量限制
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            default: 10
+            example: 10
+      responses:
+        '200':
+          description: 获取建议成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuggestionsResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # 搜索历史管理API
+  /search/history:
+    get:
+      tags:
+        - history
+      summary: 获取搜索历史
+      description: 获取用户的搜索历史记录
+      parameters:
+        - name: userId
+          in: query
+          required: false
+          description: 用户ID（可选，用于用户登录后的个性化历史）
+          schema:
+            type: string
+            example: "user123"
+        - name: limit
+          in: query
+          required: false
+          description: 返回历史记录数量限制
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 50
+            default: 20
+            example: 20
+      responses:
+        '200':
+          description: 获取历史成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchHistoryResponse'
+    post:
+      tags:
+        - history
+      summary: 保存搜索历史
+      description: 保存用户的搜索记录
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SaveSearchHistoryRequest'
+      responses:
+        '201':
+          description: 保存成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+    delete:
+      tags:
+        - history
+      summary: 删除搜索历史
+      description: 删除指定的搜索历史记录
+      parameters:
+        - name: userId
+          in: query
+          required: false
+          description: 用户ID
+          schema:
+            type: string
+            example: "user123"
+        - name: historyId
+          in: query
+          required: false
+          description: 历史记录ID（不提供则清空所有历史）
+          schema:
+            type: string
+            example: "hist123"
+      responses:
+        '200':
+          description: 删除成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessResponse'
+        '404':
+          description: 历史记录不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # 热门搜索API
+  /search/popular:
+    get:
+      tags:
+        - popular
+      summary: 获取热门搜索
+      description: 获取当前热门的搜索关键词和问题
+      parameters:
+        - name: type
+          in: query
+          required: false
+          description: 热门搜索类型
+          schema:
+            type: string
+            enum: ["keywords", "questions", "all"]
+            default: "all"
+            example: "all"
+        - name: limit
+          in: query
+          required: false
+          description: 返回数量限制
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 20
+            default: 10
+            example: 10
+      responses:
+        '200':
+          description: 获取热门搜索成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PopularSearchResponse'
+
+  # 专业详情API
+  /majors/{majorId}:
+    get:
+      tags:
+        - majors
+      summary: 获取专业详情
+      description: 获取指定专业的详细信息
+      parameters:
+        - name: majorId
+          in: path
+          required: true
+          description: 专业ID
+          schema:
+            type: string
+            example: "major_001"
+      responses:
+        '200':
+          description: 获取专业详情成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MajorDetailResponse'
+        '404':
+          description: 专业不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /majors/{majorId}/skills-analysis:
+    get:
+      tags:
+        - majors
+      summary: 获取专业技能分析
+      description: 获取专业与指定岗位群的技能匹配分析
+      parameters:
+        - name: majorId
+          in: path
+          required: true
+          description: 专业ID
+          schema:
+            type: string
+            example: "major_001"
+        - name: jobGroupId
+          in: query
+          required: true
+          description: 岗位群ID
+          schema:
+            type: string
+            example: "job_001"
+      responses:
+        '200':
+          description: 获取技能分析成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SkillAnalysisResponse'
+        '404':
+          description: 专业或岗位群不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  # Dashboard数据API
+  /dashboard/statistics:
+    get:
+      tags:
+        - dashboard
+      summary: 获取统计数据
+      description: 获取Dashboard页面所需的基础统计数据
+      responses:
+        '200':
+          description: 获取统计数据成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StatisticsResponse'
+
+  /dashboard/sankey-data:
+    get:
+      tags:
+        - dashboard
+      summary: 获取桑基图数据
+      description: 获取院校专业到岗位群流向的桑基图数据
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: 数据条数限制
+          schema:
+            type: integer
+            minimum: 10
+            maximum: 1000
+            default: 100
+            example: 100
+      responses:
+        '200':
+          description: 获取桑基图数据成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SankeyDataResponse'
+
+  /dashboard/heatmap-data:
+    get:
+      tags:
+        - dashboard
+      summary: 获取热力图数据
+      description: 获取毕业生就业地理分布热力图数据
+      parameters:
+        - name: majorCategory
+          in: query
+          required: false
+          description: 专业门类筛选
+          schema:
+            type: string
+            example: "工学"
+        - name: year
+          in: query
+          required: false
+          description: 年份筛选
+          schema:
+            type: integer
+            example: 2023
+      responses:
+        '200':
+          description: 获取热力图数据成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HeatMapDataResponse'
+
+  # 报告生成API
+  /reports:
+    post:
+      tags:
+        - reports
+      summary: 生成分析报告
+      description: 根据指定参数生成专业匹配分析报告
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/GenerateReportRequest'
+      responses:
+        '201':
+          description: 报告生成成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/GenerateReportResponse'
+        '400':
+          description: 请求参数错误
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+  /reports/{reportId}:
+    get:
+      tags:
+        - reports
+      summary: 获取分析报告
+      description: 获取指定ID的分析报告内容
+      parameters:
+        - name: reportId
+          in: path
+          required: true
+          description: 报告ID
+          schema:
+            type: string
+            example: "report_001"
+      responses:
+        '200':
+          description: 获取报告成功
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ReportResponse'
+        '404':
+          description: 报告不存在
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+
+components:
+  schemas:
+    # 基础数据模型
+    University:
+      type: object
+      required:
+        - id
+        - name
+        - location
+        - tier
+      properties:
+        id:
+          type: string
+          description: 大学唯一标识
+          example: "univ_001"
+        name:
+          type: string
+          description: 大学名称
+          example: "清华大学"
+        location:
+          $ref: '#/components/schemas/Location'
+        tier:
+          type: string
+          enum: ["985", "211", "双一流", "普通"]
+          description: 学校层次
+          example: "985"
+        logo:
+          type: string
+          format: uri
+          description: 学校logo URL
+          example: "https://example.com/logos/tsinghua.png"
+        establishedYear:
+          type: integer
+          description: 建校年份
+          example: 1911
+
+    Location:
+      type: object
+      required:
+        - province
+        - city
+        - coordinates
+      properties:
+        province:
+          type: string
+          description: 省份
+          example: "北京"
+        city:
+          type: string
+          description: 城市
+          example: "北京"
+        coordinates:
+          type: array
+          items:
+            type: number
+          minItems: 2
+          maxItems: 2
+          description: 坐标 [经度, 纬度]
+          example: [116.3974, 39.9093]
+
+    Major:
+      type: object
+      required:
+        - id
+        - name
+        - code
+        - category
+        - degree
+        - university
+        - skillsMatch
+        - employmentMatch
+        - finalScore
+      properties:
+        id:
+          type: string
+          description: 专业唯一标识
+          example: "major_001"
+        name:
+          type: string
+          description: 专业名称
+          example: "计算机科学与技术"
+        code:
+          type: string
+          description: 专业代码
+          example: "080901"
+        category:
+          type: string
+          description: 专业门类
+          example: "工学"
+        degree:
+          type: string
+          enum: ["本科", "硕士", "博士"]
+          description: 学历层次
+          example: "本科"
+        university:
+          $ref: '#/components/schemas/University'
+        description:
+          type: string
+          description: 专业描述
+          example: "计算机科学与技术专业培养具有良好的科学素养..."
+        skillsMatch:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 技能匹配度 (0-100)
+          example: 85.5
+        employmentMatch:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 就业关联度 (0-100)
+          example: 92.3
+        finalScore:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 综合评分 (0-100)
+          example: 88.9
+        skills:
+          type: array
+          items:
+            $ref: '#/components/schemas/Skill'
+          description: 技能列表
+        employmentData:
+          $ref: '#/components/schemas/EmploymentData'
+
+    Skill:
+      type: object
+      required:
+        - name
+        - category
+        - matchScore
+        - importance
+      properties:
+        name:
+          type: string
+          description: 技能名称
+          example: "Java编程"
+        category:
+          type: string
+          description: 技能分类
+          example: "编程语言"
+        matchScore:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 与岗位需求的匹配度
+          example: 90.0
+        importance:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 在专业中的重要性
+          example: 85.0
+
+    EmploymentData:
+      type: object
+      required:
+        - totalGraduates
+        - employmentRate
+        - relatedFieldRate
+      properties:
+        totalGraduates:
+          type: integer
+          description: 毕业生总数
+          example: 1200
+        employmentRate:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 就业率 (%)
+          example: 95.5
+        relatedFieldRate:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 相关领域就业率 (%)
+          example: 88.2
+        averageSalary:
+          type: number
+          description: 平均薪资
+          example: 12000
+        topEmployers:
+          type: array
+          items:
+            type: string
+          description: 主要雇主列表
+          example: ["腾讯", "阿里巴巴", "字节跳动"]
+        geographicDistribution:
+          type: array
+          items:
+            $ref: '#/components/schemas/GeographicData'
+          description: 地理分布数据
+
+    GeographicData:
+      type: object
+      required:
+        - region
+        - count
+        - percentage
+      properties:
+        region:
+          type: string
+          description: 地区名称
+          example: "北京"
+        count:
+          type: integer
+          description: 人数
+          example: 300
+        percentage:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 占比 (%)
+          example: 25.0
+
+    JobGroup:
+      type: object
+      required:
+        - id
+        - name
+        - industry
+        - requiredSkills
+      properties:
+        id:
+          type: string
+          description: 岗位群唯一标识
+          example: "job_001"
+        name:
+          type: string
+          description: 岗位群名称
+          example: "软件工程师"
+        industry:
+          type: string
+          description: 所属行业
+          example: "信息技术"
+        requiredSkills:
+          type: array
+          items:
+            $ref: '#/components/schemas/Skill'
+          description: 所需技能列表
+        description:
+          type: string
+          description: 岗位群描述
+          example: "负责软件系统的设计、开发和维护"
+        averageSalary:
+          type: number
+          description: 平均薪资
+          example: 15000
+        growthRate:
+          type: number
+          description: 增长率 (%)
+          example: 12.5
+
+    # API响应模型
+    SearchResponse:
+      type: object
+      required:
+        - data
+        - pagination
+        - filters
+        - searchTime
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/Major'
+          description: 搜索结果列表
+        pagination:
+          $ref: '#/components/schemas/PaginationInfo'
+        filters:
+          $ref: '#/components/schemas/SearchFilters'
+        searchTime:
+          type: number
+          description: 搜索耗时(毫秒)
+          example: 125
+
+    PaginationInfo:
+      type: object
+      required:
+        - page
+        - pageSize
+        - total
+        - totalPages
+      properties:
+        page:
+          type: integer
+          description: 当前页码
+          example: 1
+        pageSize:
+          type: integer
+          description: 每页数量
+          example: 20
+        total:
+          type: integer
+          description: 总记录数
+          example: 156
+        totalPages:
+          type: integer
+          description: 总页数
+          example: 8
+
+    SearchFilters:
+      type: object
+      properties:
+        location:
+          type: array
+          items:
+            type: string
+          description: 地理位置筛选
+          example: ["北京", "上海"]
+        universityTier:
+          type: array
+          items:
+            type: string
+            enum: ["985", "211", "双一流", "普通"]
+          description: 学校层次筛选
+          example: ["985", "211"]
+        majorCategory:
+          type: array
+          items:
+            type: string
+          description: 专业门类筛选
+          example: ["工学", "理学"]
+        degreeLevel:
+          type: array
+          items:
+            type: string
+            enum: ["本科", "硕士", "博士"]
+          description: 学历层次筛选
+          example: ["本科"]
+        sortBy:
+          type: string
+          enum: ["skillsMatch", "employmentMatch", "finalScore"]
+          description: 排序字段
+          example: "finalScore"
+        sortOrder:
+          type: string
+          enum: ["asc", "desc"]
+          description: 排序方向
+          example: "desc"
+        minScore:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 最低评分筛选
+          example: 60
+
+    # 其他响应模型
+    SuggestionsResponse:
+      type: object
+      required:
+        - suggestions
+      properties:
+        suggestions:
+          type: array
+          items:
+            type: string
+          description: 搜索建议列表
+          example: ["软件工程师", "软件测试工程师", "软件架构师"]
+
+    SearchHistoryResponse:
+      type: object
+      required:
+        - history
+      properties:
+        history:
+          type: array
+          items:
+            $ref: '#/components/schemas/SearchHistoryItem'
+          description: 搜索历史列表
+
+    SearchHistoryItem:
+      type: object
+      required:
+        - id
+        - query
+        - timestamp
+      properties:
+        id:
+          type: string
+          description: 历史记录ID
+          example: "hist_001"
+        query:
+          type: string
+          description: 搜索关键词
+          example: "软件工程师"
+        timestamp:
+          type: string
+          format: date-time
+          description: 搜索时间
+          example: "2025-01-19T10:30:00Z"
+        userId:
+          type: string
+          description: 用户ID（可选）
+          example: "user123"
+
+    PopularSearchResponse:
+      type: object
+      required:
+        - keywords
+        - questions
+      properties:
+        keywords:
+          type: array
+          items:
+            $ref: '#/components/schemas/PopularItem'
+          description: 热门关键词列表
+        questions:
+          type: array
+          items:
+            $ref: '#/components/schemas/PopularItem'
+          description: 热门问题列表
+
+    PopularItem:
+      type: object
+      required:
+        - content
+        - searchCount
+      properties:
+        content:
+          type: string
+          description: 内容
+          example: "软件工程师"
+        searchCount:
+          type: integer
+          description: 搜索次数
+          example: 1250
+        trend:
+          type: string
+          enum: ["up", "down", "stable"]
+          description: 趋势
+          example: "up"
+
+    MajorDetailResponse:
+      type: object
+      required:
+        - major
+      properties:
+        major:
+          $ref: '#/components/schemas/Major'
+
+    SkillAnalysisResponse:
+      type: object
+      required:
+        - skillsComparison
+        - radarChartData
+      properties:
+        skillsComparison:
+          type: array
+          items:
+            $ref: '#/components/schemas/SkillComparison'
+          description: 技能对比数据
+        radarChartData:
+          $ref: '#/components/schemas/RadarData'
+
+    SkillComparison:
+      type: object
+      required:
+        - skillName
+        - majorLevel
+        - jobRequirement
+        - matchScore
+      properties:
+        skillName:
+          type: string
+          description: 技能名称
+          example: "Java编程"
+        majorLevel:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 专业培养水平
+          example: 85.0
+        jobRequirement:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 岗位要求水平
+          example: 90.0
+        matchScore:
+          type: number
+          minimum: 0
+          maximum: 100
+          description: 匹配度评分
+          example: 88.0
+
+    RadarData:
+      type: object
+      required:
+        - categories
+        - majorData
+        - jobData
+      properties:
+        categories:
+          type: array
+          items:
+            type: string
+          description: 技能分类
+          example: ["编程能力", "算法思维", "系统设计", "团队协作", "沟通能力"]
+        majorData:
+          type: array
+          items:
+            type: number
+          description: 专业数据
+          example: [85, 80, 75, 70, 65]
+        jobData:
+          type: array
+          items:
+            type: number
+          description: 岗位需求数据
+          example: [90, 85, 80, 75, 70]
+
+    StatisticsResponse:
+      type: object
+      required:
+        - totalUniversities
+        - totalMajors
+        - totalJobGroups
+        - lastUpdateTime
+      properties:
+        totalUniversities:
+          type: integer
+          description: 大学总数
+          example: 2856
+        totalMajors:
+          type: integer
+          description: 专业总数
+          example: 15420
+        totalJobGroups:
+          type: integer
+          description: 岗位群总数
+          example: 1250
+        lastUpdateTime:
+          type: string
+          format: date-time
+          description: 最后更新时间
+          example: "2025-01-19T08:00:00Z"
+
+    SankeyDataResponse:
+      type: object
+      required:
+        - nodes
+        - links
+      properties:
+        nodes:
+          type: array
+          items:
+            $ref: '#/components/schemas/SankeyNode'
+          description: 桑基图节点数据
+        links:
+          type: array
+          items:
+            $ref: '#/components/schemas/SankeyLink'
+          description: 桑基图连接数据
+
+    SankeyNode:
+      type: object
+      required:
+        - id
+        - name
+        - category
+      properties:
+        id:
+          type: string
+          description: 节点ID
+          example: "node_001"
+        name:
+          type: string
+          description: 节点名称
+          example: "清华大学-计算机科学与技术"
+        category:
+          type: string
+          enum: ["university", "major", "jobGroup"]
+          description: 节点类型
+          example: "major"
+
+    SankeyLink:
+      type: object
+      required:
+        - source
+        - target
+        - value
+      properties:
+        source:
+          type: string
+          description: 源节点ID
+          example: "node_001"
+        target:
+          type: string
+          description: 目标节点ID
+          example: "node_002"
+        value:
+          type: number
+          description: 连接权重
+          example: 150
+
+    HeatMapDataResponse:
+      type: object
+      required:
+        - data
+        - maxValue
+        - minValue
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/HeatMapPoint'
+          description: 热力图数据点
+        maxValue:
+          type: number
+          description: 最大值
+          example: 1000
+        minValue:
+          type: number
+          description: 最小值
+          example: 10
+
+    HeatMapPoint:
+      type: object
+      required:
+        - lat
+        - lng
+        - value
+      properties:
+        lat:
+          type: number
+          description: 纬度
+          example: 39.9093
+        lng:
+          type: number
+          description: 经度
+          example: 116.3974
+        value:
+          type: number
+          description: 数值
+          example: 500
+        region:
+          type: string
+          description: 地区名称
+          example: "北京"
+
+    # 请求模型
+    SaveSearchHistoryRequest:
+      type: object
+      required:
+        - query
+      properties:
+        query:
+          type: string
+          description: 搜索关键词
+          example: "软件工程师"
+        userId:
+          type: string
+          description: 用户ID（可选）
+          example: "user123"
+        timestamp:
+          type: string
+          format: date-time
+          description: 搜索时间（可选，默认为当前时间）
+          example: "2025-01-19T10:30:00Z"
+
+    GenerateReportRequest:
+      type: object
+      required:
+        - jobGroupId
+        - selectedMajors
+      properties:
+        jobGroupId:
+          type: string
+          description: 岗位群ID
+          example: "job_001"
+        selectedMajors:
+          type: array
+          items:
+            type: string
+          description: 选中的专业ID列表
+          example: ["major_001", "major_002", "major_003"]
+        reportType:
+          type: string
+          enum: ["basic", "detailed", "comprehensive"]
+          default: "basic"
+          description: 报告类型
+          example: "detailed"
+        includeCharts:
+          type: boolean
+          default: true
+          description: 是否包含图表
+          example: true
+
+    GenerateReportResponse:
+      type: object
+      required:
+        - reportId
+        - status
+      properties:
+        reportId:
+          type: string
+          description: 报告ID
+          example: "report_001"
+        status:
+          type: string
+          enum: ["generating", "completed", "failed"]
+          description: 生成状态
+          example: "generating"
+        estimatedTime:
+          type: integer
+          description: 预计完成时间（秒）
+          example: 30
+
+    ReportResponse:
+      type: object
+      required:
+        - content
+        - createdAt
+        - metadata
+      properties:
+        content:
+          type: string
+          description: 报告内容（Markdown格式）
+          example: "# 专业匹配分析报告\n\n## 概述\n..."
+        createdAt:
+          type: string
+          format: date-time
+          description: 创建时间
+          example: "2025-01-19T10:30:00Z"
+        metadata:
+          $ref: '#/components/schemas/ReportMetadata'
+
+    ReportMetadata:
+      type: object
+      required:
+        - reportId
+        - jobGroupName
+        - majorCount
+      properties:
+        reportId:
+          type: string
+          description: 报告ID
+          example: "report_001"
+        jobGroupName:
+          type: string
+          description: 岗位群名称
+          example: "软件工程师"
+        majorCount:
+          type: integer
+          description: 分析的专业数量
+          example: 3
+        reportType:
+          type: string
+          description: 报告类型
+          example: "detailed"
+        fileSize:
+          type: integer
+          description: 文件大小（字节）
+          example: 15420
+
+    # 通用响应模型
+    SuccessResponse:
+      type: object
+      required:
+        - success
+        - message
+      properties:
+        success:
+          type: boolean
+          description: 操作是否成功
+          example: true
+        message:
+          type: string
+          description: 响应消息
+          example: "操作成功"
+        data:
+          type: object
+          description: 附加数据（可选）
+
+    ErrorResponse:
+      type: object
+      required:
+        - success
+        - error
+      properties:
+        success:
+          type: boolean
+          description: 操作是否成功
+          example: false
+        error:
+          $ref: '#/components/schemas/ErrorDetail'
+
+    ErrorDetail:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: 错误代码
+          example: "INVALID_PARAMETER"
+        message:
+          type: string
+          description: 错误消息
+          example: "请求参数无效"
+        details:
+          type: string
+          description: 详细错误信息
+          example: "query参数不能为空"
+        timestamp:
+          type: string
+          format: date-time
+          description: 错误发生时间
+          example: "2025-01-19T10:30:00Z"
+
+  # 安全定义（预留）
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: X-API-Key
+      description: API密钥认证（未来可能启用）
+
+# 全局安全配置（当前为空，表示开放API）
+security: []
