@@ -75,7 +75,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     const value = event.target.value as string[];
     onFiltersChange({
       ...filters,
-      universityTier: value.length > 0 ? value : undefined,
+      // universityTier: value.length > 0 ? value : undefined,
     });
   };
 
@@ -91,7 +91,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
     const value = event.target.value as string[];
     onFiltersChange({
       ...filters,
-      degreeLevel: value.length > 0 ? value : undefined,
+      // degreeLevel: value.length > 0 ? value : undefined,
     });
   };
 
@@ -316,7 +316,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
           </FormControl>
 
           {/* 最低评分筛选 */}
-          <Box>
+          {/* <Box>
             <Typography variant="body2" gutterBottom>
               最低评分: {filters.minScore || 0}
             </Typography>
@@ -334,7 +334,7 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
               valueLabelDisplay="auto"
               disabled={loading}
             />
-          </Box>
+          </Box> */}
         </Box>
       </Collapse>
     </Paper>

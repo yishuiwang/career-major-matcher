@@ -16,7 +16,6 @@ import {
   Update as UpdateIcon,
 } from '@mui/icons-material';
 import StatCard from '../../components/common/StatCard';
-import SankeyChart from '../../components/charts/SankeyChart';
 import HeatMap from '../../components/charts/HeatMap';
 import UniversityListModal from '../../components/university/UniversityListModal';
 import { useDashboardStore } from '../../store/dashboardStore';
@@ -38,7 +37,6 @@ const DashboardPage: React.FC = () => {
 
   const {
     statistics,
-    sankeyData,
     heatMapData,
     loading,
     error,
@@ -139,18 +137,6 @@ const DashboardPage: React.FC = () => {
           </Grid>
         </Grid>
 
-        {/* 图表区域 */}
-        <Grid container spacing={3}>
-          {/* 桑基图 */}
-          <Grid size={{ xs: 12, lg: 8 }}>
-            <SankeyChart
-              data={sankeyData || { nodes: [], links: [] }}
-              width={isMobile ? 350 : 800}
-              height={500}
-              loading={loading.sankey}
-              onNodeClick={handleNodeClick}
-            />
-          </Grid>
 
           {/* 热力图 */}
           <Grid size={{ xs: 12, lg: 4 }}>
@@ -161,7 +147,6 @@ const DashboardPage: React.FC = () => {
               title="毕业生就业地理分布"
             />
           </Grid>
-        </Grid>
 
         {/* 错误提示 */}
         {Object.entries(error).map(([key, errorMessage]) => (
