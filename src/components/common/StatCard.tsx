@@ -14,6 +14,8 @@ interface StatCardProps {
   icon: React.ReactNode;
   color?: 'primary' | 'secondary' | 'success' | 'warning' | 'error' | 'info';
   loading?: boolean;
+  onClick?: () => void;
+  clickable?: boolean;
 }
 
 // {{CHENGQI:
@@ -32,6 +34,8 @@ const StatCard: React.FC<StatCardProps> = ({
   icon,
   color = 'primary',
   loading = false,
+  onClick,
+  clickable = false,
 }) => {
   const theme = useTheme();
 
@@ -98,13 +102,16 @@ const StatCard: React.FC<StatCardProps> = ({
   return (
     <Card
       elevation={2}
+      onClick={clickable ? onClick : undefined}
       sx={{
         height: '100%',
         borderRadius: 2,
         transition: 'all 0.3s ease',
+        cursor: clickable ? 'pointer' : 'default',
         '&:hover': {
-          elevation: 4,
-          transform: 'translateY(-2px)',
+          elevation: clickable ? 6 : 4,
+          transform: clickable ? 'translateY(-4px)' : 'translateY(-2px)',
+          backgroundColor: clickable ? 'action.hover' : 'background.paper',
         },
       }}
     >

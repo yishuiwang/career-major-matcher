@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Container,
   Typography,
@@ -18,6 +18,7 @@ import {
 import StatCard from '../../components/common/StatCard';
 import SankeyChart from '../../components/charts/SankeyChart';
 import HeatMap from '../../components/charts/HeatMap';
+import UniversityListModal from '../../components/university/UniversityListModal';
 import { useDashboardStore } from '../../store/dashboardStore';
 
 // {{CHENGQI:
@@ -33,6 +34,7 @@ import { useDashboardStore } from '../../store/dashboardStore';
 const DashboardPage: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const [universityModalOpen, setUniversityModalOpen] = useState(false);
 
   const {
     statistics,
@@ -74,6 +76,14 @@ const DashboardPage: React.FC = () => {
     clearError(type);
   };
 
+  const handleUniversityCardClick = () => {
+    setUniversityModalOpen(true);
+  };
+
+  const handleUniversityModalClose = () => {
+    setUniversityModalOpen(false);
+  };
+
   return (
     <Box sx={{ height: '100%', width: '100%' }}>
       <Container maxWidth="xl" sx={{ py: 4, height: '100%' }}>
@@ -96,6 +106,8 @@ const DashboardPage: React.FC = () => {
               icon={<SchoolIcon fontSize="large" />}
               color="primary"
               loading={loading.statistics}
+              clickable={true}
+              onClick={handleUniversityCardClick}
             />
           </Grid>
           <Grid size={{ xs: 12, sm: 6, md: 3 }}>
@@ -171,6 +183,12 @@ const DashboardPage: React.FC = () => {
             </Snackbar>
           )
         ))}
+
+        {/* 大学列表模态对话框 */}
+        <UniversityListModal
+          open={universityModalOpen}
+          onClose={handleUniversityModalClose}
+        />
       </Container>
     </Box>
   );
