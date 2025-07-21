@@ -315,26 +315,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             </Select>
           </FormControl>
 
-          {/* 最低评分筛选 */}
-          {/* <Box>
-            <Typography variant="body2" gutterBottom>
-              最低评分: {filters.minScore || 0}
-            </Typography>
-            <Slider
-              value={filters.minScore || 0}
-              onChange={handleMinScoreChange}
-              min={0}
-              max={100}
-              step={5}
-              marks={[
-                { value: 0, label: '0' },
-                { value: 50, label: '50' },
-                { value: 100, label: '100' },
-              ]}
-              valueLabelDisplay="auto"
-              disabled={loading}
-            />
-          </Box> */}
         </Box>
       </Collapse>
     </Paper>

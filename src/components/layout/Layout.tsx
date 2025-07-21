@@ -144,7 +144,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             pt: { xs: 8, md: 3 }, // 移动端顶部留出菜单按钮空间
             width: '100%',
             minWidth: 0, // 防止内容撑开容器
-            backgroundColor: 'rgb(246, 245, 245)',
+            backgroundColor: 'background.default',
             // 确保内容区域也有平滑的过渡效果
             transition: getContentTransition(),
             // 性能优化
