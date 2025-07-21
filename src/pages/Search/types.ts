@@ -1,25 +1,50 @@
 // {{CHENGQI:
 // Action: Created
-// Timestamp: [2025-01-20 16:00:00 +08:00]
-// Reason: 创建类型定义文件，为SearchPage组件模块化重构提供统一的类型接口
-// Principle_Applied: SOLID (接口隔离原则), DRY (统一类型定义)
-// Optimization: 集中管理所有类型定义，提高代码可维护性和类型安全
-// Architectural_Note (AR): 采用类型优先的架构设计，确保组件间接口清晰
-// Documentation_Note (DW): SearchPage模块化重构的类型定义文件
+// Timestamp: [2025-01-21 15:15:00 +08:00]
+// Reason: 创建SearchPage相关的TypeScript类型定义文件，确保类型安全和代码可维护性
+// Principle_Applied: SOLID (接口隔离原则), DRY (统一的类型定义), KISS (简洁的类型系统)
+// Optimization: 完整的类型定义，支持Google Gemini风格的搜索功能
+// Architectural_Note (AR): 类型定义文件，为SearchPage组件系统提供类型安全保障
+// Documentation_Note (DW): SearchPage类型定义文件已创建，包含所有必要的接口和类型
 // }}
+
+import type { ReactNode } from 'react';
 
 // 匹配模式类型
 export type MatchMode = 'comprehensive' | 'skill' | 'employment';
 
-// 筛选条件类型
+// 匹配模式配置接口
+export interface MatchModeConfig {
+  value: MatchMode;
+  label: string;
+  icon: ReactNode;
+  description: string;
+}
+
+// 筛选选项类型
 export interface FilterOptions {
   regions: string[];
   cities: string[];
   schoolLevels: string[];
 }
 
-// 专业匹配结果类型
-export interface MajorMatch {
+// 筛选条件变更处理函数类型
+export type FilterChangeHandler = (
+  type: keyof FilterOptions,
+  value: string,
+  checked: boolean
+) => void;
+
+// 搜索结果接口 (匹配现有mockData结构)
+export interface SearchResult {
+  query: string;
+  timestamp: Date;
+  analysis: string; // AI分析内容
+  topMajors: TopMajor[]; // 推荐专业列表
+}
+
+// 推荐专业接口 (匹配现有mockData结构)
+export interface TopMajor {
   id: string;
   schoolName: string;
   majorName: string;
@@ -30,23 +55,9 @@ export interface MajorMatch {
   description: string;
 }
 
-// 搜索结果类型
-export interface SearchResult {
-  query: string;
-  analysis: string; // markdown格式的分析内容
-  topMajors: MajorMatch[];
-  timestamp: Date;
-}
 
-// 匹配模式配置类型
-export interface MatchModeConfig {
-  value: MatchMode;
-  label: string;
-  icon: React.ReactElement;
-  description: string;
-}
 
-// SearchBox组件Props
+// SearchBox 组件属性接口
 export interface SearchBoxProps {
   searchQuery: string;
   onSearchQueryChange: (query: string) => void;
@@ -57,72 +68,94 @@ export interface SearchBoxProps {
   filterOptions: FilterOptions;
   onFilterDialogOpen: () => void;
   getAppliedFiltersCount: () => number;
-  mode: 'center' | 'top'; // 居中模式或顶部模式
+  mode: 'center' | 'top';
   placeholder?: string;
   disabled?: boolean;
 }
 
-// SearchResults组件Props
-export interface SearchResultsProps {
-  searchResults: SearchResult | null;
-  streamingContent: string;
-  isSearching: boolean;
-}
-
-// MajorCard组件Props
-export interface MajorCardProps {
-  major: MajorMatch;
-  onClick?: (major: MajorMatch) => void;
-}
-
-// FilterDialog组件Props
+// FilterDialog 组件属性接口
 export interface FilterDialogProps {
   open: boolean;
   onClose: () => void;
   filterOptions: FilterOptions;
-  onFilterChange: (type: keyof FilterOptions, value: string, checked: boolean) => void;
+  onFilterChange: FilterChangeHandler;
   onApplyFilters: () => void;
   onResetFilters: () => void;
   getAppliedFiltersCount: () => number;
   isMobile: boolean;
 }
 
-// StreamingText组件Props
-export interface StreamingTextProps {
-  content: string;
-  speed?: number; // 每个字符的显示间隔（毫秒）
-  onComplete?: () => void;
-  className?: string;
-}
-
-// D3Chart组件Props（为后续D3.js图表准备）
-export interface D3ChartProps {
-  data: MajorMatch[];
-  width?: number;
-  height?: number;
-  onBarClick?: (major: MajorMatch) => void;
-}
-
-// MessageBubble组件Props
-export interface MessageBubbleProps {
-  type: 'user' | 'ai';
-  content: string | React.ReactNode;
-  timestamp?: Date;
-  isStreaming?: boolean;
-}
-
-// AIResponse组件Props
+// AIResponse 组件属性接口
 export interface AIResponseProps {
   searchResults: SearchResult | null;
-  isStreaming?: boolean;
+  isStreaming: boolean;
 }
 
-// 常量定义
-export const REGIONS = ['华北', '华东', '华南', '华中', '西北', '西南', '东北'];
-export const CITIES = ['北京', '上海', '广州', '深圳', '杭州', '南京', '成都', '武汉', '西安', '天津'];
-export const SCHOOL_LEVELS = ['985工程', '211工程', '双一流', '省重点', '普通本科'];
+// 搜索历史项接口
+export interface SearchHistoryItem {
+  query: string;
+  timestamp: Date;
+  matchMode: MatchMode;
+  filterOptions: FilterOptions;
+}
 
-// 事件处理器类型
-export type SearchHandler = (query: string) => void;
-export type MatchModeChangeHandler = (mode: MatchMode) => void;
-export type FilterChangeHandler = (type: keyof FilterOptions, value: string, checked: boolean) => void;
+// 页面状态类型
+export type PageState = 'initial' | 'searching' | 'results';
+
+// 错误状态接口
+export interface ErrorState {
+  hasError: boolean;
+  message?: string;
+  code?: string;
+}
+
+// 加载状态接口
+export interface LoadingState {
+  isSearching: boolean;
+  isLoadingMore: boolean;
+  isRefreshing: boolean;
+}
+
+// 筛选选项常量
+export const REGIONS = [
+  '华北地区',
+  '东北地区',
+  '华东地区',
+  '华中地区',
+  '华南地区',
+  '西南地区',
+  '西北地区',
+  '港澳台地区',
+];
+
+export const CITIES = [
+  '北京',
+  '上海',
+  '广州',
+  '深圳',
+  '杭州',
+  '南京',
+  '武汉',
+  '成都',
+  '西安',
+  '天津',
+  '重庆',
+  '苏州',
+  '青岛',
+  '大连',
+  '宁波',
+  '厦门',
+  '无锡',
+  '福州',
+  '济南',
+  '长沙',
+];
+
+export const SCHOOL_LEVELS = [
+  '985工程',
+  '211工程',
+  '双一流',
+  '省重点',
+  '普通本科',
+  '专科院校',
+];

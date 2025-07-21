@@ -1,11 +1,11 @@
 // {{CHENGQI:
-// Action: Modularized and Refactored
-// Timestamp: [2025-01-20 16:35:00 +08:00]
-// Reason: 将SearchPage组件模块化重构，拆分为独立的子组件，提高代码可维护性和复用性
-// Principle_Applied: SOLID (单一职责原则), KISS (简洁的组件架构), DRY (组件复用)
-// Optimization: 组件化架构，清晰的数据流，独立的业务逻辑，更好的代码组织
-// Architectural_Note (AR): 采用组件化架构，主组件负责状态管理，子组件负责UI展示
-// Documentation_Note (DW): SearchPage模块化重构，拆分为SearchBox、SearchResults、FilterDialog等子组件
+// Action: Modified
+// Timestamp: [2025-01-21 15:00:00 +08:00]
+// Reason: 重构SearchPage以符合Google Gemini设计风格，优化布局、间距和视觉层次，创造更现代化的用户体验
+// Principle_Applied: SOLID (单一职责原则), KISS (简化布局设计), DRY (组件复用)
+// Optimization: Google Gemini风格的布局设计、更好的留白处理、现代化的视觉层次
+// Architectural_Note (AR): 基于Google Gemini设计语言的页面布局，保持组件化架构
+// Documentation_Note (DW): SearchPage已重构为Google Gemini风格，采用现代化的布局和视觉设计
 // }}
 
 import React, { useState, useEffect } from 'react';
@@ -26,7 +26,7 @@ import type {
   FilterOptions,
   SearchResult,
   FilterChangeHandler,
-} from './types';
+} from './types.js';
 
 // 导入子组件
 import SearchBox from './components/SearchBox';
@@ -265,7 +265,7 @@ const SearchPage: React.FC = () => {
       ) : (
         // 原始搜索页面
         <>
-          {/* 主要内容区域 - 居中布局 */}
+          {/* 主要内容区域 - Google Gemini 风格居中布局 */}
           <Box
             sx={{
               flexGrow: 1,
@@ -273,30 +273,39 @@ const SearchPage: React.FC = () => {
               flexDirection: 'column',
               alignItems: 'center',
               justifyContent: 'center',
-              p: { xs: 2, md: 4 },
-              maxWidth: '800px',
+              p: { xs: 3, md: 6 },
+              maxWidth: '900px', // 稍微增加最大宽度
               mx: 'auto',
               width: '100%',
+              minHeight: '60vh', // 确保有足够的高度
             }}
           >
-            {/* Logo和标题区域 */}
-            <Box sx={{ textAlign: 'center', mb: { xs: 4, md: 6 } }}>
+            {/* Logo和标题区域 - Google Gemini 风格 */}
+            <Box sx={{ textAlign: 'center', mb: { xs: 6, md: 8 } }}>
               <Typography
-                variant="h3"
+                variant="h1"
                 component="h1"
                 sx={{
-                  fontWeight: 700,
-                  mb: 2,
-                  background: 'linear-gradient(45deg, #1976d2, #42a5f5)',
-                  backgroundClip: 'text',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  fontSize: { xs: '2rem', md: '3rem' },
+                  fontWeight: 400, // Google 使用较轻的字重
+                  mb: 3,
+                  color: 'text.primary',
+                  fontSize: { xs: '2.5rem', md: '3.5rem' },
+                  letterSpacing: '-0.02em',
+                  lineHeight: 1.2,
                 }}
               >
                 岗位群匹配专业
               </Typography>
-              <Typography variant="h6" color="text.secondary" sx={{ fontSize: { xs: '1rem', md: '1.25rem' } }}>
+              <Typography
+                variant="h5"
+                color="text.secondary"
+                sx={{
+                  fontSize: { xs: '1.125rem', md: '1.375rem' },
+                  fontWeight: 400,
+                  letterSpacing: '0.01em',
+                  lineHeight: 1.4,
+                }}
+              >
                 你想知道什么？
               </Typography>
             </Box>
@@ -316,18 +325,31 @@ const SearchPage: React.FC = () => {
               disabled={isSearching}
             />
 
-            {/* 热门搜索 - 紧跟搜索框下方 */}
-            <Box sx={{ width: '100%', maxWidth: '800px', mt: 3 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2, justifyContent: 'center' }}>
-                <TrendingIcon color="primary" fontSize="small" />
-                <Typography variant="subtitle2" fontWeight={600} color="text.secondary">
+            {/* 热门搜索 - Google Gemini 风格 */}
+            <Box sx={{ width: '100%', maxWidth: '700px', mt: { xs: 4, md: 6 } }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3, justifyContent: 'center' }}>
+                <TrendingIcon
+                  sx={{
+                    color: 'text.secondary',
+                    fontSize: '20px',
+                  }}
+                />
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontWeight: 500,
+                    color: 'text.secondary',
+                    fontSize: '15px',
+                    letterSpacing: '0.01em',
+                  }}
+                >
                   热门搜索
                 </Typography>
               </Box>
               <Box sx={{
                 display: 'flex',
                 flexWrap: 'wrap',
-                gap: 1,
+                gap: 1.5,
                 justifyContent: 'center',
                 maxWidth: '600px',
                 mx: 'auto',
@@ -338,23 +360,25 @@ const SearchPage: React.FC = () => {
                     label={item}
                     onClick={() => handlePopularClick(item)}
                     variant="outlined"
-                    size="small"
                     sx={{
-                      height: 40,
-                      borderRadius: '20px',
+                      height: 36,
+                      borderRadius: '18px', // Google Gemini 风格圆角
                       fontSize: '14px',
-                      fontWeight: 500,
-                      border: '1px solid rgba(5, 5, 5, 0.1)',
-                      backgroundColor: 'transparent',
-                      color: '#1d1c1b',
+                      fontWeight: 400,
+                      border: '1px solid rgba(0, 0, 0, 0.12)',
+                      backgroundColor: 'background.paper',
+                      color: 'text.primary',
+                      cursor: 'pointer',
                       '&:hover': {
-                        backgroundColor: 'rgba(5, 5, 5, 0.05)',
-                        borderColor: 'rgba(5, 5, 5, 0.15)',
+                        backgroundColor: 'action.hover',
+                        borderColor: 'rgba(0, 0, 0, 0.24)',
+                        boxShadow: '0 1px 3px rgba(0,0,0,0.12)',
                         transform: 'translateY(-1px)',
                       },
-                      transition: 'all 0.2s ease',
+                      transition: 'all 0.2s cubic-bezier(0.4, 0.0, 0.2, 1)',
                       '& .MuiChip-label': {
                         px: 2,
+                        py: 0.5,
                       },
                     }}
                   />
