@@ -9,7 +9,6 @@ import type {
   UniversityType,
   UniversityQueryParams,
   UniversityListResponse,
-  UniversityStatistics,
 } from '../types/university';
 
 // {{CHENGQI:

@@ -22,6 +22,7 @@ import {
   School as SchoolIcon,
 } from '@mui/icons-material';
 import type { SearchResultsProps } from '../types';
+import type { TopMajor } from '../types';
 import StreamingText from './StreamingText';
 import MajorCard from './MajorCard';
 
@@ -30,7 +31,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
   streamingContent,
   isSearching,
 }) => {
-  const handleMajorCardClick = (major: any) => {
+  const handleMajorCardClick = (major: TopMajor) => {
     console.log('点击专业卡片:', major);
     // 这里可以实现跳转到专业详情页面的逻辑
   };
@@ -158,7 +159,7 @@ const SearchResults: React.FC<SearchResultsProps> = ({
           </Box>
           <Grid container spacing={3}>
             {searchResults.topMajors.map((major, index) => (
-              <Grid item xs={12} sm={6} lg={4} key={major.id}>
+              <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={major.id}>
                 <Box sx={{ position: 'relative' }}>
                   {/* 排名标识 */}
                   <Box

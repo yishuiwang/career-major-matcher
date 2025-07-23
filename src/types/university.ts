@@ -14,7 +14,7 @@
 // }}
 
 // 办学层次类型
-export type UniversityLevel = 
+export type UniversityLevel =
   | '985'
   | '211'
   | '双一流'

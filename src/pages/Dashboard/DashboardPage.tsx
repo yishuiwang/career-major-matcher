@@ -6,8 +6,6 @@ import {
   Grid,
   Alert,
   Snackbar,
-  useTheme,
-  useMediaQuery,
 } from '@mui/material';
 import {
   School as SchoolIcon,
@@ -31,8 +29,6 @@ import { useDashboardStore } from '../../store/dashboardStore';
 // }}
 
 const DashboardPage: React.FC = () => {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [universityModalOpen, setUniversityModalOpen] = useState(false);
 
   const {
@@ -63,11 +59,6 @@ const DashboardPage: React.FC = () => {
     } catch {
       return '未知';
     }
-  };
-
-  const handleNodeClick = (node: any) => {
-    console.log('Node clicked:', node);
-    // TODO: 实现节点点击处理逻辑
   };
 
   const handleCloseError = (type: keyof typeof error) => {

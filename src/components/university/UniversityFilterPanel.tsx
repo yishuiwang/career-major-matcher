@@ -16,9 +16,8 @@ import {
   FilterList as FilterIcon,
   Clear as ClearIcon,
 } from '@mui/icons-material';
+
 import {
-  UniversityLevel,
-  UniversityType,
   PROVINCES,
 } from '../../types/university';
 
@@ -158,7 +157,7 @@ const UniversityFilterPanel: React.FC<UniversityFilterPanelProps> = ({
             <MenuItem value="">
               <em>全部层次</em>
             </MenuItem>
-            {Object.values(UniversityLevel).map((level) => (
+            {['985', '211', '双一流', '省重点', '普通本科', '专科'].map((level) => (
               <MenuItem key={level} value={level}>
                 {level}
               </MenuItem>
@@ -186,7 +185,7 @@ const UniversityFilterPanel: React.FC<UniversityFilterPanelProps> = ({
             <MenuItem value="">
               <em>全部类型</em>
             </MenuItem>
-            {Object.values(UniversityType).map((type) => (
+            {['综合类', '理工类', '师范类', '农林类', '医药类', '财经类', '政法类', '语言类', '艺术类', '体育类', '军事类', '民族类'].map((type) => (
               <MenuItem key={type} value={type}>
                 {type}
               </MenuItem>

@@ -37,7 +37,6 @@ interface PaginationControlsProps {
 
 const PaginationControls: React.FC<PaginationControlsProps> = ({
   pagination,
-  onPageChange,
   onPageSizeChange,
   loading = false,
 }) => {
@@ -45,10 +44,6 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
 
   const { page, pageSize, total, totalPages } = pagination;
-
-  const handlePageChange = (event: React.ChangeEvent<unknown>, newPage: number) => {
-    onPageChange(newPage);
-  };
 
   const handlePageSizeChange = (event: any) => {
     onPageSizeChange(event.target.value as number);
@@ -107,7 +102,7 @@ const PaginationControls: React.FC<PaginationControlsProps> = ({
         <Pagination
           count={totalPages}
           page={page}
-          onChange={handlePageChange}
+          // onChange={handlePageChange}
           disabled={loading}
           color="primary"
           size={isMobile ? 'small' : 'medium'}

@@ -20,7 +20,7 @@ import {
   OpenInNew as OpenInNewIcon,
   School as SchoolIcon,
 } from '@mui/icons-material';
-import {
+import type {
   University,
   UniversityLevel,
 } from '../../types/university';
@@ -61,13 +61,13 @@ const UniversityTable: React.FC<UniversityTableProps> = ({
   // 获取办学层次的颜色
   const getLevelColor = (level: UniversityLevel) => {
     switch (level) {
-      case UniversityLevel.LEVEL_985:
+      case '985':
         return 'error';
-      case UniversityLevel.LEVEL_211:
+      case '211':
         return 'warning';
-      case UniversityLevel.DOUBLE_FIRST_CLASS:
+      case '双一流':
         return 'primary';
-      case UniversityLevel.PROVINCIAL_KEY:
+      case '省重点':
         return 'info';
       default:
         return 'default';

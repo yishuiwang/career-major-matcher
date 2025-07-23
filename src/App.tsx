@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from '@mui/material/styles';
 import { CssBaseline } from '@mui/material';
@@ -8,7 +8,7 @@ import ResultsPage from './pages/Results/ResultsPage';
 import DashboardPage from './pages/Dashboard/DashboardPage';
 import ReportPage from './pages/Report/ReportPage';
 import { theme } from './constants/theme';
-import { ROUTES } from './constants/routes';
+
 
 // {{CHENGQI:
 // Action: Modified

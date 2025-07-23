@@ -58,12 +58,12 @@ export interface Major {
 
 // 搜索和筛选相关类型
 export interface SearchFilters {
-  location?: string[];
-  universityTier?: ('985' | '211' | '双一流' | '普通')[];
-  majorCategory?: string[];
-  degreeLevel?: ('本科' | '硕士' | '博士')[];
-  sortBy?: 'skillsMatch' | 'employmentMatch' | 'finalScore';
-  sortOrder?: 'asc' | 'desc';
+  location?: string | string[];
+  universityTier?: string | ('985' | '211' | '双一流' | '普通')[];
+  majorCategory?: string | string[];
+  degreeLevel?: string | ('本科' | '硕士' | '博士')[];
+  sortBy?: 'skillsMatch' | 'employmentMatch' | 'finalScore' | string;
+  sortOrder?: 'asc' | 'desc' | string;
   minScore?: number;
 }
 
@@ -134,12 +134,12 @@ export interface SearchParams {
   query: string;
   page?: number;
   pageSize?: number;
-  location?: string;
-  universityTier?: string;
-  majorCategory?: string;
-  degreeLevel?: string;
-  sortBy?: string;
-  sortOrder?: string;
+  location?: string | string[];
+  universityTier?: string | string[];
+  majorCategory?: string | string[];
+  degreeLevel?: string | string[];
+  sortBy?: 'skillsMatch' | 'employmentMatch' | 'finalScore' | string;
+  sortOrder?: 'asc' | 'desc' | string;
   minScore?: number;
 }
 

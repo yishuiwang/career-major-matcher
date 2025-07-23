@@ -48,12 +48,12 @@ interface Major {
 }
 
 interface SearchFilters {
-  location?: string[];
-  universityTier?: ('985' | '211' | '双一流' | '普通')[];
-  majorCategory?: string[];
-  degreeLevel?: ('本科' | '硕士' | '博士')[];
-  sortBy?: 'skillsMatch' | 'employmentMatch' | 'finalScore';
-  sortOrder?: 'asc' | 'desc';
+  location?: string | string[];
+  universityTier?: string | ('985' | '211' | '双一流' | '普通')[];
+  majorCategory?: string | string[];
+  degreeLevel?: string | ('本科' | '硕士' | '博士')[];
+  sortBy?: 'skillsMatch' | 'employmentMatch' | 'finalScore' | string;
+  sortOrder?: 'asc' | 'desc' | string;
   minScore?: number;
 }
 
@@ -75,10 +75,10 @@ interface SearchParams {
   query: string;
   page?: number;
   pageSize?: number;
-  location?: string;
-  universityTier?: string;
-  majorCategory?: string;
-  degreeLevel?: string;
+  location?: string | string[];
+  universityTier?: string | string[];
+  majorCategory?: string | string[];
+  degreeLevel?: string | string[];
   sortBy?: string;
   sortOrder?: string;
   minScore?: number;
@@ -96,54 +96,9 @@ interface ExportResponse {
   expiresAt: string;
 }
 
-// API基础配置
-const API_BASE_URL = 'http://localhost:3000/api/v1';
-
-// 缓存配置
-const CACHE_DURATION = 2 * 60 * 1000; // 2分钟缓存
 const cache = new Map<string, { data: any; timestamp: number }>();
 
-// 通用API调用函数
-async function apiCall<T>(endpoint: string, params?: Record<string, any>): Promise<T> {
-  const url = new URL(`${API_BASE_URL}${endpoint}`);
-  
-  if (params) {
-    Object.entries(params).forEach(([key, value]) => {
-      if (value !== undefined && value !== null && value !== '') {
-        url.searchParams.append(key, String(value));
-      }
-    });
-  }
 
-  const cacheKey = url.toString();
-  const cached = cache.get(cacheKey);
-  
-  // 检查缓存
-  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-    return cached.data;
-  }
-
-  try {
-    const response = await fetch(url.toString());
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    // 更新缓存
-    cache.set(cacheKey, {
-      data,
-      timestamp: Date.now(),
-    });
-    
-    return data;
-  } catch (error) {
-    console.error(`API call failed for ${endpoint}:`, error);
-    throw error;
-  }
-}
 
 // 搜索专业
 export async function searchMajors(params: SearchParams): Promise<SearchResponse> {
@@ -158,7 +113,7 @@ export async function searchMajors(params: SearchParams): Promise<SearchResponse
 
 // 生成模拟搜索结果
 function generateMockSearchResults(params: SearchParams): SearchResponse {
-  const { query, page = 1, pageSize = 20, sortBy = 'finalScore', sortOrder = 'desc' } = params;
+  const {  page = 1, pageSize = 20, sortBy = 'finalScore', sortOrder = 'desc' } = params;
   
   // 模拟大学数据
   const universities = [
@@ -233,7 +188,7 @@ function generateMockSearchResults(params: SearchParams): SearchResponse {
 
   // 生成完整的专业数据
   const fullMajors = majors.flatMap(major => 
-    universities.map((university, index) => ({
+    universities.map((university) => ({
       ...major,
       id: `${major.id}_${university.id}`,
       university,
@@ -301,9 +256,13 @@ function generateMockSearchResults(params: SearchParams): SearchResponse {
       totalPages,
     },
     filters: {
-      sortBy,
-      sortOrder,
-      ...params,
+      sortBy: sortBy as 'skillsMatch' | 'employmentMatch' | 'finalScore' | string,
+      sortOrder: sortOrder as 'asc' | 'desc' | string,
+      location: params.location,
+      universityTier: params.universityTier as string | ('985' | '211' | '双一流' | '普通')[],
+      majorCategory: params.majorCategory,
+      degreeLevel: params.degreeLevel as string | ('本科' | '硕士' | '博士')[],
+      minScore: params.minScore,
     },
     searchTime: 150 + Math.floor(Math.random() * 100),
   };

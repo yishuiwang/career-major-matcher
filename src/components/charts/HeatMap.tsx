@@ -25,13 +25,13 @@ interface HeatMapProps {
 
 // 注册中国地图数据（简化版本，实际项目中应该使用完整的地图数据）
 const chinaGeoJson = {
-  type: 'FeatureCollection',
+  type: 'FeatureCollection' as const,
   features: [
     {
-      type: 'Feature',
+      type: 'Feature' as const,
       properties: { name: '中国' },
       geometry: {
-        type: 'Polygon',
+        type: 'Polygon' as const,
         coordinates: [[
           [73.66, 53.56], [134.77, 53.56], [134.77, 18.16], [73.66, 18.16], [73.66, 53.56]
         ]]

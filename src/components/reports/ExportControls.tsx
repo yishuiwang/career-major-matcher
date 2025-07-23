@@ -16,7 +16,6 @@ import {
   Typography,
   CircularProgress,
   Divider,
-  useTheme,
 } from '@mui/material';
 import {
   Download as DownloadIcon,
@@ -53,12 +52,10 @@ interface ExportControlsProps {
 }
 
 const ExportControls: React.FC<ExportControlsProps> = ({
-  reportId,
   onExport,
   loading = false,
   disabled = false,
 }) => {
-  const theme = useTheme();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [exportDialogOpen, setExportDialogOpen] = useState(false);
   const [exportOptions, setExportOptions] = useState<ExportOptions>({

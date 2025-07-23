@@ -7,9 +7,6 @@ import {
   TextField,
   InputAdornment,
   IconButton,
-  Alert,
-  Snackbar,
-  CircularProgress,
   Fab,
   useTheme,
   useMediaQuery,
@@ -20,11 +17,10 @@ import {
   Clear as ClearIcon,
   MenuBook as MenuBookIcon,
 } from '@mui/icons-material';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import MarkdownRenderer from '../../components/reports/MarkdownRenderer';
 import ReportTOC from '../../components/reports/ReportTOC';
 import ExportControls from '../../components/reports/ExportControls';
-import { useReportStore } from '../../store/reportStore';
 
 // {{CHENGQI:
 // Action: Modified
@@ -39,7 +35,6 @@ import { useReportStore } from '../../store/reportStore';
 const ReportPage: React.FC = () => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
-  const navigate = useNavigate();
   const { reportId } = useParams<{ reportId: string }>();
   const [tocCollapsed, setTocCollapsed] = useState(isMobile);
   const [loading, setLoading] = useState(true);

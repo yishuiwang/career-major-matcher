@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+import type { SearchParams as ImportedSearchParams } from '../types/results';
 // 定义数据类型
 interface University {
   id: string;
@@ -45,12 +46,12 @@ interface Major {
 }
 
 interface SearchFilters {
-  location?: string[];
-  universityTier?: ('985' | '211' | '双一流' | '普通')[];
-  majorCategory?: string[];
-  degreeLevel?: ('本科' | '硕士' | '博士')[];
-  sortBy?: 'skillsMatch' | 'employmentMatch' | 'finalScore';
-  sortOrder?: 'asc' | 'desc';
+  location?: string | string[];
+  universityTier?: string | ('985' | '211' | '双一流' | '普通')[];
+  majorCategory?: string | string[];
+  degreeLevel?: string | ('本科' | '硕士' | '博士')[];
+  sortBy?: 'skillsMatch' | 'employmentMatch' | 'finalScore' | string;
+  sortOrder?: 'asc' | 'desc' | string;
   minScore?: number;
 }
 
@@ -65,10 +66,10 @@ interface SearchParams {
   query: string;
   page?: number;
   pageSize?: number;
-  location?: string;
-  universityTier?: string;
-  majorCategory?: string;
-  degreeLevel?: string;
+  location?: string | string[];
+  universityTier?: string | string[];
+  majorCategory?: string | string[];
+  degreeLevel?: string | string[];
   sortBy?: string;
   sortOrder?: string;
   minScore?: number;
@@ -94,7 +95,7 @@ import { searchMajors, getFilterOptions, exportSearchResults } from '../services
 
 interface ResultsStore extends ResultsState {
   // 搜索相关Actions
-  searchMajors: (query: string, params?: Partial<SearchParams>) => Promise<void>;
+  searchMajors: (query: string, params?: Partial<ImportedSearchParams>) => Promise<void>;
   loadMore: () => Promise<void>;
   applyFilters: (filters: SearchFilters) => Promise<void>;
   clearResults: () => void;
@@ -161,7 +162,7 @@ export const useResultsStore = create<ResultsStore>()(
       },
 
       // 搜索专业
-      searchMajors: async (query: string, params?: Partial<SearchParams>) => {
+      searchMajors: async (query: string, params?: Partial<ImportedSearchParams>) => {
         set({ loading: true, error: null, searchQuery: query });
 
         try {

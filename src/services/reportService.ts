@@ -20,14 +20,6 @@ interface ReportContent {
   metadata: ReportMetadata;
 }
 
-interface GenerateReportRequest {
-  jobGroupId: string;
-  selectedMajors: string[];
-  reportType?: 'basic' | 'detailed' | 'comprehensive';
-  includeCharts?: boolean;
-  customSections?: string[];
-}
-
 interface GenerateReportResponse {
   reportId: string;
   status: 'generating' | 'completed' | 'failed';
@@ -50,56 +42,10 @@ interface ExportResponse {
 }
 
 // API基础配置
-const API_BASE_URL = 'http://localhost:3000/api/v1';
-
-// 缓存配置
-const CACHE_DURATION = 10 * 60 * 1000; // 10分钟缓存
 const cache = new Map<string, { data: any; timestamp: number }>();
 
-// 通用API调用函数
-async function apiCall<T>(endpoint: string, options?: RequestInit): Promise<T> {
-  const cacheKey = `${endpoint}_${JSON.stringify(options)}`;
-  const cached = cache.get(cacheKey);
-  
-  // 检查缓存（仅对GET请求）
-  if (!options?.method || options.method === 'GET') {
-    if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-      return cached.data;
-    }
-  }
-
-  try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
-      headers: {
-        'Content-Type': 'application/json',
-        ...options?.headers,
-      },
-      ...options,
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    // 更新缓存（仅对GET请求）
-    if (!options?.method || options.method === 'GET') {
-      cache.set(cacheKey, {
-        data,
-        timestamp: Date.now(),
-      });
-    }
-    
-    return data;
-  } catch (error) {
-    console.error(`API call failed for ${endpoint}:`, error);
-    throw error;
-  }
-}
-
 // 生成报告
-export async function generateReport(request: GenerateReportRequest): Promise<GenerateReportResponse> {
+export async function generateReport(): Promise<GenerateReportResponse> {
   // 模拟数据（实际项目中会调用真实API）
   return new Promise((resolve) => {
     setTimeout(() => {

@@ -1,5 +1,4 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
 import {
   getReport,
   generateReport,
@@ -143,11 +142,11 @@ export const useReportStore = create<ReportStore>((set, get) => ({
       },
 
       // 生成新报告
-      generateNewReport: async (request: GenerateReportRequest) => {
+      generateNewReport: async () => {
         set({ generating: true, error: null });
 
         try {
-          const response = await generateReport(request);
+          const response = await generateReport();
           
           // 如果报告立即完成，直接加载
           if (response.status === 'completed') {
@@ -231,7 +230,7 @@ export const useReportStore = create<ReportStore>((set, get) => ({
         let currentSection = '';
         let sectionId = '';
 
-        lines.forEach((line, index) => {
+        lines.forEach((line, _) => {
           // 检测标题行
           const headingMatch = line.match(/^(#{1,6})\s+(.+)$/);
           if (headingMatch) {

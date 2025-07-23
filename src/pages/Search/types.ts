@@ -55,7 +55,12 @@ export interface TopMajor {
   description: string;
 }
 
-
+// SearchResults 组件属性接口
+export interface SearchResultsProps {
+  searchResults: SearchResult | null;
+  streamingContent: string | null;
+  isSearching: boolean;
+}
 
 // SearchBox 组件属性接口
 export interface SearchBoxProps {

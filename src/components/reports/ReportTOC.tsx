@@ -93,7 +93,7 @@ const ReportTOC: React.FC<ReportTOCProps> = ({
     setExpandedSections(newExpanded);
   };
 
-  const renderTOCItem = (item: TOCItem, index: number) => {
+  const renderTOCItem = (item: TOCItem) => {
     const isActive = activeSection === item.anchor;
     const hasChildren = item.children && item.children.length > 0;
     const isExpanded = expandedSections.has(item.id);
@@ -183,8 +183,8 @@ const ReportTOC: React.FC<ReportTOCProps> = ({
         {hasChildren && (
           <Collapse in={isExpanded} timeout="auto" unmountOnExit>
             <List component="div" disablePadding>
-              {item.children!.map((child, childIndex) =>
-                renderTOCItem(child, childIndex)
+              {item.children!.map((child) =>
+                renderTOCItem(child)
               )}
             </List>
           </Collapse>
@@ -262,7 +262,7 @@ const ReportTOC: React.FC<ReportTOCProps> = ({
           }}
         >
           <List component="nav" disablePadding sx={{ p: 1 }}>
-            {toc.items.map((item, index) => renderTOCItem(item, index))}
+            {toc.items.map((item) => renderTOCItem(item))}
           </List>
         </Box>
       </Collapse>

@@ -47,50 +47,11 @@ interface HeatMapDataResponse {
   minValue: number;
 }
 
-interface DashboardFilters {
-  majorCategory?: string;
-  year?: number;
-  region?: string;
-}
 
-// API基础配置
-const API_BASE_URL = 'http://localhost:3000/api/v1';
 
 // 缓存配置
-const CACHE_DURATION = 5 * 60 * 1000; // 5分钟缓存
 const cache = new Map<string, { data: any; timestamp: number }>();
 
-// 通用API调用函数
-async function apiCall<T>(endpoint: string): Promise<T> {
-  const cacheKey = endpoint;
-  const cached = cache.get(cacheKey);
-  
-  // 检查缓存
-  if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
-    return cached.data;
-  }
-
-  try {
-    const response = await fetch(`${API_BASE_URL}${endpoint}`);
-    
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-    
-    const data = await response.json();
-    
-    // 更新缓存
-    cache.set(cacheKey, {
-      data,
-      timestamp: Date.now(),
-    });
-    
-    return data;
-  } catch (error) {
-    console.error(`API call failed for ${endpoint}:`, error);
-    throw error;
-  }
-}
 
 // 获取统计数据
 export async function getStatistics(): Promise<StatisticsResponse> {
@@ -108,7 +69,7 @@ export async function getStatistics(): Promise<StatisticsResponse> {
 }
 
 // 获取桑基图数据
-export async function getSankeyData(limit = 100): Promise<SankeyDataResponse> {
+export async function getSankeyData(): Promise<SankeyDataResponse> {
   // 模拟数据（实际项目中会调用真实API）
   return new Promise((resolve) => {
     setTimeout(() => {
@@ -164,7 +125,7 @@ export async function getSankeyData(limit = 100): Promise<SankeyDataResponse> {
 }
 
 // 获取热力图数据
-export async function getHeatMapData(filters?: DashboardFilters): Promise<HeatMapDataResponse> {
+export async function getHeatMapData(): Promise<HeatMapDataResponse> {
   // 模拟数据（实际项目中会调用真实API）
   return new Promise((resolve) => {
     setTimeout(() => {

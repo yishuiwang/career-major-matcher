@@ -22,9 +22,6 @@ import {
   FavoriteBorder as FavoriteBorderIcon,
   Compare as CompareIcon,
   School as SchoolIcon,
-  Work as WorkIcon,
-  TrendingUp as TrendingUpIcon,
-  LocationOn as LocationIcon,
   Info as InfoIcon,
 } from '@mui/icons-material';
 // 定义数据类型

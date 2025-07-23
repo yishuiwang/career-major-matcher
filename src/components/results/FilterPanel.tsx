@@ -9,12 +9,10 @@ import {
   MenuItem,
   Chip,
   OutlinedInput,
-  Slider,
   Button,
   Divider,
   Collapse,
   IconButton,
-  useTheme,
 
 } from '@mui/material';
 import {
@@ -22,16 +20,7 @@ import {
   Clear as ClearIcon,
   ExpandMore as ExpandMoreIcon,
 } from '@mui/icons-material';
-// 定义筛选类型
-interface SearchFilters {
-  location?: string[];
-  universityTier?: ('985' | '211' | '双一流' | '普通')[];
-  majorCategory?: string[];
-  degreeLevel?: ('本科' | '硕士' | '博士')[];
-  sortBy?: 'skillsMatch' | 'employmentMatch' | 'finalScore';
-  sortOrder?: 'asc' | 'desc';
-  minScore?: number;
-}
+import type { SearchFilters } from '../../types/results';
 
 // {{CHENGQI:
 // Action: Added
@@ -60,7 +49,6 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   availableOptions,
   loading = false,
 }) => {
-  const theme = useTheme();
   const [expanded, setExpanded] = useState(false);
 
   const handleLocationChange = (event: any) => {
@@ -72,10 +60,10 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   };
 
   const handleTierChange = (event: any) => {
-    const value = event.target.value as string[];
+    const value = event.target.value as ('985' | '211' | '双一流' | '普通')[];
     onFiltersChange({
       ...filters,
-      // universityTier: value.length > 0 ? value : undefined,
+      universityTier: value.length > 0 ? value : undefined,
     });
   };
 
@@ -88,17 +76,10 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
   };
 
   const handleDegreeLevelChange = (event: any) => {
-    const value = event.target.value as string[];
+    const value = event.target.value as ('本科' | '硕士' | '博士')[];
     onFiltersChange({
       ...filters,
-      // degreeLevel: value.length > 0 ? value : undefined,
-    });
-  };
-
-  const handleMinScoreChange = (event: Event, newValue: number | number[]) => {
-    onFiltersChange({
-      ...filters,
-      minScore: newValue as number,
+      degreeLevel: value.length > 0 ? value : undefined,
     });
   };
 
@@ -119,20 +100,20 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
 
   const hasActiveFilters = () => {
     return !!(
-      filters.location?.length ||
-      filters.universityTier?.length ||
-      filters.majorCategory?.length ||
-      filters.degreeLevel?.length ||
+      (Array.isArray(filters.location) && filters.location.length) ||
+      (Array.isArray(filters.universityTier) && filters.universityTier.length) ||
+      (Array.isArray(filters.majorCategory) && filters.majorCategory.length) ||
+      (Array.isArray(filters.degreeLevel) && filters.degreeLevel.length) ||
       (filters.minScore && filters.minScore > 0)
     );
   };
 
   const getActiveFilterCount = () => {
     let count = 0;
-    if (filters.location?.length) count++;
-    if (filters.universityTier?.length) count++;
-    if (filters.majorCategory?.length) count++;
-    if (filters.degreeLevel?.length) count++;
+    if (Array.isArray(filters.location) && filters.location.length) count++;
+    if (Array.isArray(filters.universityTier) && filters.universityTier.length) count++;
+    if (Array.isArray(filters.majorCategory) && filters.majorCategory.length) count++;
+    if (Array.isArray(filters.degreeLevel) && filters.degreeLevel.length) count++;
     if (filters.minScore && filters.minScore > 0) count++;
     return count;
   };
@@ -220,12 +201,12 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             <InputLabel>地区</InputLabel>
             <Select
               multiple
-              value={filters.location || []}
+              value={Array.isArray(filters.location) ? filters.location : []}
               onChange={handleLocationChange}
               input={<OutlinedInput label="地区" />}
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map((value) => (
+                  {(selected as string[]).map((value) => (
                     <Chip key={value} label={value} size="small" />
                   ))}
                 </Box>
@@ -245,12 +226,12 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             <InputLabel>学校层次</InputLabel>
             <Select
               multiple
-              value={filters.universityTier || []}
+              value={Array.isArray(filters.universityTier) ? filters.universityTier : []}
               onChange={handleTierChange}
               input={<OutlinedInput label="学校层次" />}
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map((value) => (
+                  {(selected as string[]).map((value) => (
                     <Chip key={value} label={value} size="small" />
                   ))}
                 </Box>
@@ -270,12 +251,12 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             <InputLabel>专业门类</InputLabel>
             <Select
               multiple
-              value={filters.majorCategory || []}
+              value={Array.isArray(filters.majorCategory) ? filters.majorCategory : []}
               onChange={handleCategoryChange}
               input={<OutlinedInput label="专业门类" />}
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map((value) => (
+                  {(selected as string[]).map((value) => (
                     <Chip key={value} label={value} size="small" />
                   ))}
                 </Box>
@@ -295,12 +276,12 @@ const FilterPanel: React.FC<FilterPanelProps> = ({
             <InputLabel>学历层次</InputLabel>
             <Select
               multiple
-              value={filters.degreeLevel || []}
+              value={Array.isArray(filters.degreeLevel) ? filters.degreeLevel : []}
               onChange={handleDegreeLevelChange}
               input={<OutlinedInput label="学历层次" />}
               renderValue={(selected) => (
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
-                  {selected.map((value) => (
+                  {(selected as string[]).map((value) => (
                     <Chip key={value} label={value} size="small" />
                   ))}
                 </Box>

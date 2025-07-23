@@ -25,7 +25,8 @@ import {
   Work as WorkIcon,
   AttachMoney as MoneyIcon,
 } from '@mui/icons-material';
-import type { SearchResult, MajorMatch, AIResponseProps } from '../types';
+import type { AIResponseProps } from '../types';
+import type { TopMajor } from '../types';
 
 const AIResponse: React.FC<AIResponseProps> = ({
   searchResults,
@@ -162,7 +163,7 @@ const AIResponse: React.FC<AIResponseProps> = ({
     return elements;
   };
   // 生成包含Top 10专业的完整Markdown内容
-  const generateEnhancedContent = (analysis: string, majors: MajorMatch[]): string => {
+  const generateEnhancedContent = (analysis: string, majors: TopMajor[]): string => {
     if (!majors || majors.length === 0) {
       return analysis;
     }
@@ -199,7 +200,7 @@ ${major.description}
   };
 
   // 渲染专业卡片
-  const renderMajorCard = (major: MajorMatch, index: number) => (
+  const renderMajorCard = (major: TopMajor, index: number) => (
     <Grid size={{ xs: 12, sm: 6, lg: 4 }} key={major.id}>
       <Card
         sx={{

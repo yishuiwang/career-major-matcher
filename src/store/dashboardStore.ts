@@ -130,14 +130,14 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
   },
 
   // 加载桑基图数据
-  loadSankeyData: async (limit = 100) => {
+  loadSankeyData: async () => {
     set(state => ({
       loading: { ...state.loading, sankey: true },
       error: { ...state.error, sankey: null },
     }));
 
     try {
-      const sankeyData = await getSankeyData(limit);
+      const sankeyData = await getSankeyData();
       set(state => ({
         sankeyData,
         loading: { ...state.loading, sankey: false },
@@ -155,14 +155,14 @@ export const useDashboardStore = create<DashboardStore>((set, get) => ({
   },
 
   // 加载热力图数据
-  loadHeatMapData: async (filters?: DashboardFilters) => {
+  loadHeatMapData: async (_filters?: DashboardFilters) => {
     set(state => ({
       loading: { ...state.loading, heatMap: true },
       error: { ...state.error, heatMap: null },
     }));
 
     try {
-      const heatMapData = await getHeatMapData(filters);
+      const heatMapData = await getHeatMapData();
       set(state => ({
         heatMapData,
         loading: { ...state.loading, heatMap: false },
